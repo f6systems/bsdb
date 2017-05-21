@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"log"
-	//"os"
+	"os"
 	"path/filepath"
 )
 
@@ -60,7 +60,9 @@ func BSRelease(dbc *sql.DB) (id int) {
 	  }	*/
 	err := dbc.QueryRow(sQ).Scan(&id)
 	if err != nil {
-		log.Printf("<FAIL> ERROR: Some issue with db query row. (err=%v)\n", err)
+		//log.Printf("<FAIL> ERROR: Some issue with db query row. (err=%v)\n", err)
+		//NOTE: Here , ping passed so there is most likely *no* rows .. return 0
+		return 0
 	}
 	return id
 	//return 0
@@ -93,13 +95,31 @@ func bootstrapCreate(dbc *sql.DB) error {
 //  pass result with *sql.DB and process all needed YYYYMMDDNN.sql files ...
 
 //
-func getSQLFiles() { //BSFileDir(dir string/os.path ...)
-                BSDIR := "./sql" //BSDIR ..
-        BSDIR = "/home/hopley/go/src/github.com/f6systems/testbs/sql"
-        files, _ := ioutil.ReadDir(BSDIR)
+func getSQLFiles(d string) error { //BSFileDir(dir string/os.path ...)
+	err := dirExists(d)
+	if err != nil {
+		d = "./sql"
+		//d = "/home/hopley/go/src/github.com/f6systems/testbs/sql"
+		err = dirExists(d)
+		if err != nil {
+			return err
+		}
+	}
+        files, _ := ioutil.ReadDir(d)
         for _, f := range files {
                 log.Println("File=" + f.Name())
         }
+	return nil
+}
+
+func dirExists(d string) error {
+        Dir := os.Getenv(d)
+	_,err :=  os.Stat(Dir)
+        if err != nil {
+                log.Printf("<FAIL> Issue directory,%q, does not exist. (err=%v).\n",d,err)
+                return err
+        }
+	return nil
 }
 
 func getNewerSQL(id int,dir string) { //TODO:(hopley) create an appropriate struct for return ...
