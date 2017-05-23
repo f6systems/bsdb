@@ -125,6 +125,7 @@ func dirExists(d string) error {
 func getNewerSQL(id int,dir string) { //TODO:(hopley) create an appropriate struct for return ...
         //log.Printf("<INFO> Looking for files that are >%d. (and *not* YYYYMMDD00.sql...)\n",id)
         files, _ := ioutil.ReadDir(dir)
+	//TODO:(hopley) review golang array sort to ensure file names get sorted as expected
         for _, f := range files {
                 ok,err := filepath.Match("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][1-9].sql",f.Name())
                 if err != nil {
@@ -140,6 +141,7 @@ func getNewerSQL(id int,dir string) { //TODO:(hopley) create an appropriate stru
         }
 
 }
+//TODO:(hopley) - func for execSQL to run in the new SQL files.
 
 /*
  bootstrap table
